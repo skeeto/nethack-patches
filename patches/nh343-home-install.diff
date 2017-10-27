@@ -1,0 +1,91 @@
+This patch configures NetHack 3.4.3 to be installed in your home
+directory, under "$HOME/.local", on a Linux system. The patch must be
+applied before executing the setup.sh script.
+
+Here's the suggested shell configuration (.profile, etc.) to accompany
+this installation, particularly if you also build and install your own
+ncurses using the same method.
+
+    export PATH=$HOME/.local/games:$PATH
+    export LIBRARY_PATH=$HOME/.local/lib
+    export C_INCLUDE_PATH=$HOME/.local/include
+    export CPLUS_INCLUDE_PATH=$HOME/.local/include
+    export LD_LIBRARY_PATH=$HOME/.local/lib
+    export PKG_CONFIG_PATH=$HOME/.local/lib/pkgconfig
+
+Author: Chris Wellons
+This is free and unencumbered software released into the public domain.
+
+--- a/include/config.h
++++ b/include/config.h
+@@ -169,11 +169,11 @@
+ 
+ #ifdef UNIX
+ /* path and file name extension for compression program */
+-#define COMPRESS "/usr/bin/compress"	/* Lempel-Ziv compression */
+-#define COMPRESS_EXTENSION ".Z"		/* compress's extension */
++/* #define COMPRESS "/usr/bin/compress"	*/ 	/* Lempel-Ziv compression */
++/* #define COMPRESS_EXTENSION ".Z" */		/* compress's extension */
+ /* An example of one alternative you might want to use: */
+-/* #define COMPRESS "/usr/local/bin/gzip" */	/* FSF gzip compression */
+-/* #define COMPRESS_EXTENSION ".gz" */		/* normal gzip extension */
++#define COMPRESS "/bin/gzip"			/* FSF gzip compression */
++#define COMPRESS_EXTENSION ".gz"		/* normal gzip extension */
+ #endif
+ 
+ #ifndef COMPRESS
+@@ -185,7 +185,7 @@
+  *	a tar-like file, thus making a neater installation.  See *conf.h
+  *	for detailed configuration.
+  */
+-/* #define DLB */	/* not supported on all platforms */
++#define DLB		/* not supported on all platforms */
+ 
+ /*
+  *	Defining INSURANCE slows down level changes, but allows games that
+--- a/include/unixconf.h
++++ b/include/unixconf.h
+@@ -37,7 +37,7 @@
+ #define NETWORK		/* if running on a networked system */
+ 			/* e.g. Suns sharing a playground through NFS */
+ /* #define SUNOS4 */	/* SunOS 4.x */
+-/* #define LINUX */	/* Another Unix clone */
++#define LINUX 		/* Another Unix clone */
+ /* #define CYGWIN32 */	/* Unix on Win32 -- use with case sensitive defines */
+ /* #define GENIX */	/* Yet Another Unix Clone */
+ /* #define HISX */	/* Bull Unix for XPS Machines */
+--- a/sys/unix/Makefile.src
++++ b/sys/unix/Makefile.src
+@@ -230,8 +230,8 @@
+ # WINTTYLIB = -ltermcap
+ # WINTTYLIB = -lcurses
+ # WINTTYLIB = -lcurses16
+-# WINTTYLIB = -lncurses
+-WINTTYLIB = -ltermlib
++WINTTYLIB = -lncurses
++# WINTTYLIB = -ltermlib
+ #
+ # libraries for X11
+ # If USE_XPM is defined in config.h, you will also need -lXpm here.
+--- a/sys/unix/Makefile.top
++++ b/sys/unix/Makefile.top
+@@ -14,7 +14,7 @@
+ # MAKE = make
+ 
+ # make NetHack
+-PREFIX	 = /usr
++PREFIX	 = $(HOME)/.local
+ GAME     = nethack
+ # GAME     = nethack.prg
+ GAMEUID  = games
+@@ -64,8 +64,8 @@
+ # other permission-related reasons.  If that happens, you may want to set the
+ # command to "true", which is a no-op. Note that disabling chown or chgrp
+ # will only work if setuid (or setgid) behavior is not desired or required.
+-CHOWN = chown
+-CHGRP = chgrp
++CHOWN = true
++CHGRP = true
+ 
+ #
+ # end of configuration
